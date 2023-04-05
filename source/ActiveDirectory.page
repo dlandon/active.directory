@@ -1,0 +1,103 @@
+Menu="SMB:4"
+Title="Active Directory Extras"
+---
+<?PHP
+/* Copyright 2023, Dan Landon.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ */
+?>
+
+<?PHP
+$plugin = "active.directory";
+$docroot = $docroot ?? $_SERVER['DOCUMENT_ROOT'] ?: '/usr/local/emhttp';
+$translations = file_exists("$docroot/webGui/include/Translations.php");
+?>
+<?if (!$translations):?>
+<?eval('?>'.parse_file("$docroot/plugins/$plugin/ActiveDirectory"))?>
+<?else:?>
+<?
+$active_directory_cfg	= parse_ini_file( "/boot/config/plugins/{$plugin}/{$plugin}.cfg" );
+$idmap_backend			= exec( "plugins/{$plugin}/scripts/rc.active.directory backend" );
+$idmap_range			= exec( "plugins/{$plugin}/scripts/rc.active.directory range" );
+$idmap_cache_time		= exec( "plugins/{$plugin}/scripts/rc.active.directory idmap_cache" );
+$winbind_cache_time		= exec( "plugins/{$plugin}/scripts/rc.active.directory winbind_cache" );
+?>
+
+<table class="tablesorter shift ups">
+<thead><tr><th>_(Active DIrectory Extras)_</th></tr></thead>
+</table>
+
+<div style="width: 90%; float:left">
+	<p>
+	_(When you change the backend database, you will lose all your permission settings and you'll have to re-enter them)_.
+	</p>
+</div>
+
+<div style="width: 75%; float:left">
+<form markdown="1" name="tips_and_tweaks" method="POST" action="/update.php" target="progressFrame">
+<input type="hidden" name="#file" value="active.directory/active.directory.cfg">
+<input type="hidden" name="#command" value="/plugins/active.directory/scripts/rc.active.directory">
+<input type="hidden" name="#arg[1]" value="apply">
+
+
+_(Backend Database)_
+: <select name="IDMAP_BACKEND" size="1">
+	<?=mk_option($active_directory_cfg['IDMAP_BACKEND'], "tdb", "tdb");?>
+	<?=mk_option($active_directory_cfg['IDMAP_BACKEND'], "hash", "hash");?>
+  </select>
+
+:active_directory_idmap_backend_plug:
+> Select the idmap backend you want to use for the Active Directory database.
+> The idmap backend provides a plugin interface for Winbind to use varying backends to store SID/uid/gid mapping tables.
+> The preferred backend is tdb.
+:end
+
+_(Backend Range)_:
+: <input type="text" name="IDMAP_RANGE" class="narrow" maxlength="20" value="<?=$active_directory_cfg['IDMAP_RANGE'];?>" placeholder="3000-7999">
+
+:active_directory_backend_range_plug:
+> Defines the available matching uid and gid range for which the backend is authoritative. For allocating backends, this also defines the start and the end of the range for allocating new unique IDs.
+> winbind uses this parameter to find the backend that is authoritative for a unix ID to SID mapping, so it must be set for each individually configured domain and for the default configuration. The configured ranges must be mutually disjoint.
+:end
+
+_(Idmap Cache Time)_:
+: <input type="text" name="IDMAP_CACHE_TIME" class="narrow" maxlength="20" value="<?=$active_directory_cfg['IDMAP_CACHE_TIME'];?>" placeholder="302400">_(seconds)_
+
+:active_directory_idmap_cache_time_plug:
+> This parameter specifies the number of seconds that Winbind's idmap interface will cache positive SID/uid/gid query results.
+:end
+
+_(Winbind Cache Time)_:
+: <input type="text" name="WINBIND_CACHE_TIME" class="narrow" maxlength="20" value="<?=$active_directory_cfg['WINBIND_CACHE_TIME'];?>" placeholder="15">_(seconds)_
+
+:active_directory_winbind_cache_time_plug:
+> This parameter specifies the number of seconds the winbindd daemon will cache user and group information before querying a Windows NT server again.
+>
+> This does not apply to authentication requests, these are always evaluated in real time unless the winbind offline logon option has been enabled.
+:end
+
+<input type="submit" name="#default" value="_(Default)_">
+: <input type="submit" name="#apply" value="_(Apply)_"><input type="button" value="_(Done)_" onclick="done()">
+</form>
+
+<p>
+_(Click on 'Help' for more information)_.
+</p>
+</div>
+
+<div>
+	<div style="width: 25%; float:right">
+		<p><u>_(Current AD Settings)_</u></p>
+		<p>_(Backend Database)_: <?=$idmap_backend?></p>
+		<p>_(Backend Range)_: <?=$idmap_range?></p>
+		<p>_(Idmap Cache Time)_: <?=$idmap_cache_time?></p>
+		<p>_(Winbind Cache Time)_: <?=$winbind_cache_time?></p>
+	</div>
+</div>
+<?endif;?>

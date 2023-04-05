@@ -1,0 +1,140 @@
+<?xml version='1.0' standalone='yes'?>
+<!DOCTYPE PLUGIN [
+<!ENTITY name		"active.directory">
+<!ENTITY author		"dlandon">
+<!ENTITY version	"2023.04.05">
+<!ENTITY launch		"Settings/SMB">
+<!ENTITY gitURL		"https://raw.githubusercontent.com/&author;/&name;/master">
+<!ENTITY pluginURL	"&gitURL;/&name;.plg">
+<!ENTITY supportURL	"">
+<!ENTITY MD5		"dc09c61423bb66353172f5e9621c31fe">
+]>
+
+<PLUGIN	name="&name;"
+		author="&author;"
+		version="&version;"
+		launch="&launch;"
+		pluginURL="&pluginURL;"
+		support="&supportURL;"
+		icon="gear"
+		min="6.11.5">
+
+<CHANGES>
+##&name;
+###&version;
+
+###2023.04.04
+- Initial Unraid V6.11.5 release.
+</CHANGES>
+
+<!--
+Copyright 2023, Dan Landon
+This plugin lets you set some Active Directory settings.
+-->
+
+<!--
+Get the plugin bundle.
+-->
+<FILE Name="/boot/config/plugins/&name;/&name;-&version;.tgz">
+<URL>"&gitURL;/&name;-&version;.tgz"</URL>
+<MD5>&MD5;</MD5>
+</FILE>
+
+<!--
+The 'pre-install' script.
+-->
+<FILE Run="/bin/bash">
+<INLINE>
+# Remove emhttp files so we can re-install.
+rm -rf /usr/local/emhttp/plugins/&name;/* 2>/dev/null
+
+# Remove old 'bundle' files.
+rm -f $(ls /boot/config/plugins/&name;/&name;*.tgz 2>/dev/null | grep -v '&version;')
+
+# Remove old add-smb file
+rm -f /tmp/&name;/add-smb
+</INLINE>
+</FILE>
+
+<!--
+Install the plugin bundle.
+-->
+<FILE Run="/bin/bash">
+<INLINE>
+# Create plugin directory
+mkdir /boot/config/plugins/&name; 2>/dev/null
+
+# Install the 'bundle'.
+tar -xf /boot/config/plugins/&name;/&name;-&version;.tgz -C /usr/local/emhttp/plugins 2>/dev/null
+</INLINE>
+</FILE>
+
+<FILE Name="/boot/config/plugins/&name;/&name;.cfg">
+<INLINE>
+<![CDATA[
+IDMAP_BACKEND="tdb"
+IDMAP_RANGE=""
+IDMAP_CACHE_TIME=""
+WINBIND_CACHE_TIME=""
+]]>
+</INLINE>
+</FILE>
+
+<!--
+Add smb parameters for AD.
+-->
+<FILE Name="/tmp/&name;/add-smb" Mode="0770">
+<INLINE>
+<![CDATA[
+#!/bin/bash
+# Add entry to /etc/samba/smb.conf
+if [[ `grep '# hook for active directory' /etc/samba/smb.conf` = "" ]]; then
+	sed -i "/# auto-configured shares/i \[global]\n	# hook for active directory\n	include = /etc/samba/smb-active.directory.conf\n" /etc/samba/smb.conf
+	/usr/bin/smbcontrol $(/usr/bin/cat /var/run/smbd.pid 2>/dev/null) reload-config 2>&1
+fi
+]]>
+</INLINE>
+</FILE>
+
+<!--
+The 'post-install' script.
+-->
+<FILE Run="/bin/bash">
+<INLINE>
+# Add unassigned_devices to smb.conf.
+at -M -f /tmp/&name;/add-smb now 2>/dev/null
+
+
+echo ""
+echo "-----------------------------------------------------------"
+echo " &name; is installed."
+echo " Copyright 2023 &author;"
+echo " Version: &version;"
+echo "-----------------------------------------------------------"
+echo ""
+</INLINE>
+</FILE>
+
+<!--
+The 'remove' script.
+-->
+<FILE Run="/bin/bash" Method="remove">
+<INLINE>
+# Remove all plugin files.
+rm -rf /usr/local/emhttp/plugins/&name; 2>/dev/null
+
+# Remove the active directory 'bundle' so it will be downloaded if re-installed.
+rm -rf /boot/config/plugins/&name;/&name;-&version;.tgz
+
+echo "Removing packages..."
+
+echo ""
+echo "-----------------------------------------------------------"
+echo " &name; has been removed."
+echo " Version: &version;"
+echo "-----------------------------------------------------------"
+echo ""
+</INLINE>
+</FILE>
+
+</PLUGIN>
