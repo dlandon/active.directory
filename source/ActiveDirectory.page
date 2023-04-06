@@ -23,11 +23,25 @@ $translations = file_exists("$docroot/webGui/include/Translations.php");
 <?else:?>
 <?
 $active_directory_cfg	= parse_ini_file( "/boot/config/plugins/{$plugin}/{$plugin}.cfg" );
+$active_directory_cfg['IDMAP_BACKEND']				= $active_directory_cfg['IDMAP_BACKEND'] ?? "tdb";
+$active_directory_cfg['IDMAP_RANGE']				= $active_directory_cfg['IDMAP_RANGE'] ?? "";
+$active_directory_cfg['IDMAP_CACHE_TIME']			= $active_directory_cfg['IDMAP_CACHE_TIME'] ?? "";
+$active_directory_cfg['IDMAP_NEGATIVE_CACHE_TIME']	= $active_directory_cfg['IDMAP_NEGATIVE_CACHE_TIME'] ?? "";
+$active_directory_cfg['WINBIND_CACHE_TIME']			= $active_directory_cfg['WINBIND_CACHE_TIME'] ?? "";
+
 $idmap_backend			= exec( "plugins/{$plugin}/scripts/rc.active.directory backend" );
 $idmap_range			= exec( "plugins/{$plugin}/scripts/rc.active.directory range" );
 $idmap_cache_time		= exec( "plugins/{$plugin}/scripts/rc.active.directory idmap_cache" );
+$idmap_neg_cache_time	= exec( "plugins/{$plugin}/scripts/rc.active.directory idmap_neg_cache" );
 $winbind_cache_time		= exec( "plugins/{$plugin}/scripts/rc.active.directory winbind_cache" );
 ?>
+<script>
+	$(function() {
+		if ( typeof caPluginUpdateCheck === "function" ) {
+			caPluginUpdateCheck("active.directory");
+		}
+	});
+</script>
 
 <table class="tablesorter shift ups">
 <thead><tr><th>_(Active DIrectory Extras)_</th></tr></thead>
@@ -73,6 +87,13 @@ _(Idmap Cache Time)_:
 > This parameter specifies the number of seconds that Winbind's idmap interface will cache positive SID/uid/gid query results.
 :end
 
+_(Idmap Negative Cache Time)_:
+: <input type="text" name="IDMAP_NEGATIVE_CACHE_TIME" class="narrow" maxlength="20" value="<?=$active_directory_cfg['IDMAP_NEGATIVE_CACHE_TIME'];?>" placeholder="120">_(seconds)_
+
+:active_directory_idmap_negativecache_time_plug:
+> This parameter specifies the number of seconds that Winbind's idmap interface will cache negative SID/uid/gid query results.
+:end
+
 _(Winbind Cache Time)_:
 : <input type="text" name="WINBIND_CACHE_TIME" class="narrow" maxlength="20" value="<?=$active_directory_cfg['WINBIND_CACHE_TIME'];?>" placeholder="15">_(seconds)_
 
@@ -97,6 +118,7 @@ _(Click on 'Help' for more information)_.
 		<p>_(Backend Database)_: <?=$idmap_backend?></p>
 		<p>_(Backend Range)_: <?=$idmap_range?></p>
 		<p>_(Idmap Cache Time)_: <?=$idmap_cache_time?></p>
+		<p>_(Idmap Negative Cache Time)_: <?=$idmap_neg_cache_time?></p>
 		<p>_(Winbind Cache Time)_: <?=$winbind_cache_time?></p>
 	</div>
 </div>
