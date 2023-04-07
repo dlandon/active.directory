@@ -2,12 +2,12 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name		"active.directory">
 <!ENTITY author		"dlandon">
-<!ENTITY version	"2023.04.06">
+<!ENTITY version	"2023.04.07">
 <!ENTITY launch		"Settings/SMB">
 <!ENTITY gitURL		"https://raw.githubusercontent.com/&author;/&name;/master">
 <!ENTITY pluginURL	"&gitURL;/&name;.plg">
 <!ENTITY supportURL	"https://forums.unraid.net/topic/137467-active-directory-extras-plugin-allows-tweaking-some-ad-settings-in-samba/#comment-1248698">
-<!ENTITY MD5		"6f771e871e0ffa395891ae86df927ef9">
+<!ENTITY MD5		"5c85ff670bb7800a755e4c94a9872f7c">
 ]>
 
 <PLUGIN	name="&name;"
@@ -17,11 +17,14 @@
 		pluginURL="&pluginURL;"
 		support="&supportURL;"
 		icon="gear"
-		min="6.11.5">
+		min="6.9.0">
 
 <CHANGES>
 ##&name;
 ###&version;
+- Fix: Set lowest Unraid version 6.9.0.
+
+###2023.04.06
 - Add: Plugin update detection.
 - Add: 'idmap negative cache time' setting.
 
