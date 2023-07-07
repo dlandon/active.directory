@@ -2,12 +2,12 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name		"active.directory">
 <!ENTITY author		"dlandon">
-<!ENTITY version	"2023.07.07">
+<!ENTITY version	"2023.07.07a">
 <!ENTITY launch		"Settings/SMB">
 <!ENTITY gitURL		"https://raw.githubusercontent.com/&author;/&name;/master">
 <!ENTITY pluginURL	"&gitURL;/&name;.plg">
 <!ENTITY supportURL	"https://forums.unraid.net/topic/137467-active-directory-extras-plugin-allows-tweaking-some-ad-settings-in-samba/#comment-1248698">
-<!ENTITY MD5		"0b905f93b7ed89b899f6f804c7aecacb">
+<!ENTITY MD5		"73cc8ccc3c5e6f1182c8954362db0a43">
 ]>
 
 <PLUGIN	name="&name;"
@@ -26,7 +26,7 @@
 - Fix: Plugin not showing correctly in plugins.
 - Add: Submit to CA.
 
-###2023-04-07
+###2023.04.07
 - Fix: Set lowest Unraid version 6.9.0.
 
 ###2023.04.06
