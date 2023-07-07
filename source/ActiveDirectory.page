@@ -1,5 +1,6 @@
 Menu="SMB:4"
 Title="Active Directory Extras"
+Tag="fa-share-alt-square"
 ---
 <?PHP
 /* Copyright 2023, Dan Landon.
@@ -35,10 +36,13 @@ $idmap_cache_time		= exec( "plugins/{$plugin}/scripts/rc.active.directory idmap_
 $idmap_neg_cache_time	= exec( "plugins/{$plugin}/scripts/rc.active.directory idmap_neg_cache" );
 $winbind_cache_time		= exec( "plugins/{$plugin}/scripts/rc.active.directory winbind_cache" );
 ?>
+
+<div class='pluginUpdate'></div>
+
 <script>
 	$(function() {
 		if ( typeof caPluginUpdateCheck === "function" ) {
-			caPluginUpdateCheck("active.directory");
+			caPluginUpdateCheck("active.directory",{element:".pluginUpdate"});
 		}
 	});
 </script>
