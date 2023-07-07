@@ -42,7 +42,7 @@ $winbind_cache_time		= exec( "plugins/{$plugin}/scripts/rc.active.directory winb
 <script>
 	$(function() {
 		if ( typeof caPluginUpdateCheck === "function" ) {
-			caPluginUpdateCheck("active.directory",{element:".pluginUpdate"});
+			caPluginUpdateCheck("active.directory.plg",{element:".pluginUpdate"});
 		}
 	});
 </script>
