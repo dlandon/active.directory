@@ -2,12 +2,12 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name		"active.directory">
 <!ENTITY author		"dlandon">
-<!ENTITY version	"2023.04.07">
+<!ENTITY version	"2023.07.07">
 <!ENTITY launch		"Settings/SMB">
 <!ENTITY gitURL		"https://raw.githubusercontent.com/&author;/&name;/master">
 <!ENTITY pluginURL	"&gitURL;/&name;.plg">
 <!ENTITY supportURL	"https://forums.unraid.net/topic/137467-active-directory-extras-plugin-allows-tweaking-some-ad-settings-in-samba/#comment-1248698">
-<!ENTITY MD5		"5c85ff670bb7800a755e4c94a9872f7c">
+<!ENTITY MD5		"0b905f93b7ed89b899f6f804c7aecacb">
 ]>
 
 <PLUGIN	name="&name;"
@@ -16,12 +16,17 @@
 		launch="&launch;"
 		pluginURL="&pluginURL;"
 		support="&supportURL;"
-		icon="gear"
+		icon="fa-share-alt-square"
 		min="6.9.0">
 
 <CHANGES>
 ##&name;
 ###&version;
+- Fix: Add icon to settings tab.
+- Fix: Plugin not showing correctly in plugins.
+- Add: Submit to CA.
+
+###2023-04-07
 - Fix: Set lowest Unraid version 6.9.0.
 
 ###2023.04.06
@@ -107,7 +112,7 @@ The 'post-install' script.
 -->
 <FILE Run="/bin/bash">
 <INLINE>
-# Add unassigned_devices to smb.conf.
+# Add active directory settings to smb.conf.
 at -M -f /tmp/&name;/add-smb now 2>/dev/null
 
 
@@ -131,8 +136,6 @@ rm -rf /usr/local/emhttp/plugins/&name; 2>/dev/null
 
 # Remove the active directory 'bundle' so it will be downloaded if re-installed.
 rm -rf /boot/config/plugins/&name;/&name;-&version;.tgz
-
-echo "Removing packages..."
 
 echo ""
 echo "-----------------------------------------------------------"
