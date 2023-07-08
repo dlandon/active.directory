@@ -2,12 +2,12 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name		"active.directory">
 <!ENTITY author		"dlandon">
-<!ENTITY version	"2023.07.07a">
+<!ENTITY version	"2023.07.08">
 <!ENTITY launch		"Settings/SMB">
 <!ENTITY gitURL		"https://raw.githubusercontent.com/&author;/&name;/master">
 <!ENTITY pluginURL	"&gitURL;/&name;.plg">
 <!ENTITY supportURL	"https://forums.unraid.net/topic/137467-active-directory-extras-plugin-allows-tweaking-some-ad-settings-in-samba/#comment-1248698">
-<!ENTITY MD5		"73cc8ccc3c5e6f1182c8954362db0a43">
+<!ENTITY MD5		"21cb5c97b236f21eb0983617de030ba2">
 ]>
 
 <PLUGIN	name="&name;"
@@ -22,8 +22,12 @@
 <CHANGES>
 ##&name;
 ###&version;
+- Add: Show default values for 'winbind cache time' and 'idmap cache time' if values are not explicitly set.
+- Add: Clear Cache button to clear the winbind cache abd restart Samba.
+
+###2023.07.07a
 - Fix: Add icon to settings tab.
-- Fix: Plugin not showing correctly in plugins.
+- Fix: Plugin not showing correctly on plugins page.
 - Add: Submit to CA.
 
 ###2023.04.07
