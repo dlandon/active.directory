@@ -32,10 +32,19 @@ apply_settings()
 	sleep 1
 	/usr/bin/smbcontrol $(cat /var/run/smbd.pid 2>/dev/null) reload-config 2>&1
 
-	# Clear net cache
-#	/usr/bin/net cache flush
-
 	logger "Active Directory Extras Applied" -t$PROG_NAME
+}
+
+clear_winbind_cache()
+{
+	# Clear net cache
+	/usr/bin/net cache flush
+
+	# Restart samba
+	sleep 1
+	/etc/rc.d/rc.samba restart &>/dev/null
+
+	logger "Winbind cache cleared" -t$PROG_NAME
 }
 
 get_backend()
@@ -53,13 +62,21 @@ get_range()
 get_winbind_cache_time()
 {
 	value=`/usr/bin/testparm -s 2>/dev/null | /usr/bin/grep 'winbind cache time' | /bin/awk '{print $5}'`
-	echo "$value"
+	if [ "$value" = "" ]; then
+		echo "432000"
+	else
+		echo "$value"
+	fi
 }
 
 get_idmap_cache_time()
 {
 	value=`/usr/bin/testparm -s 2>/dev/null | /usr/bin/grep 'idmap cache time' | /bin/awk '{print $5}'`
-	echo "$value"
+	if [ "$value" = "" ]; then
+		echo "604800"
+	else
+		echo "$value"
+	fi
 }
 
 get_idmap_neg_cache_time()
@@ -103,6 +120,9 @@ case "$1" in
 	'apply')
 		apply_settings 
 	;;
+	'clear_cache')
+		clear_winbind_cache 
+	;;
 	'backend')
 		get_backend
 	;;
@@ -119,5 +139,5 @@ case "$1" in
 		get_idmap_neg_cache_time
 	;;
 	*)
-		echo "usage $0 apply|backend|range|winbind_cache|idmap_cache|idmap_neg_cache"
+		echo "usage $0 apply|clear_cache|backend|range|winbind_cache|idmap_cache|idmap_neg_cache"
 esac
