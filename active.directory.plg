@@ -2,12 +2,12 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name		"active.directory">
 <!ENTITY author		"dlandon">
-<!ENTITY version	"2023.07.08">
+<!ENTITY version	"2024.04.28">
 <!ENTITY launch		"Settings/SMB">
 <!ENTITY gitURL		"https://raw.githubusercontent.com/&author;/&name;/master">
 <!ENTITY pluginURL	"&gitURL;/&name;.plg">
 <!ENTITY supportURL	"https://forums.unraid.net/topic/137467-active-directory-extras-plugin-allows-tweaking-some-ad-settings-in-samba/#comment-1248698">
-<!ENTITY MD5		"21cb5c97b236f21eb0983617de030ba2">
+<!ENTITY MD5		"7c623014b2d121d024619d52a4d99b73">
 ]>
 
 <PLUGIN	name="&name;"
@@ -22,8 +22,12 @@
 <CHANGES>
 ##&name;
 ###&version;
+- Add: Samba settings: 'map acl inherit = yes', and 'store dos attributes = yes' to global settings.
+- Add: Samba settings: 'vfs objects = acl_xattr' to every share.
+
+###2023.07.08
 - Add: Show default values for 'winbind cache time' and 'idmap cache time' if values are not explicitly set.
-- Add: Clear Cache button to clear the winbind cache abd restart Samba.
+- Add: Clear Cache button to clear the winbind cache and restart Samba.
 
 ###2023.07.07a
 - Fix: Add icon to settings tab.

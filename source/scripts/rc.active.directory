@@ -28,6 +28,21 @@ apply_settings()
 	string="winbind cache time = $WINBIND_CACHE_TIME"
 	echo "$string" >> /etc/samba/smb-active.directory.conf
 
+	# Set map acl inherit
+	string="map acl inherit = yes"
+	echo "$string" >> /etc/samba/smb-active.directory.conf
+
+	# Set map acl inherit
+	string="map acl inherit = yes"
+	echo "$string" >> /etc/samba/smb-active.directory.conf
+
+	# Set store dos attributes
+	string="store dos attributes = yes"
+	echo "$string" >> /etc/samba/smb-active.directory.conf
+
+	# Set vfs objects = acl_xattr on all shares
+	/usr/local/emhttp/plugins/active.directory/scripts/config_vfs
+
 	# Reload samba parameters
 	sleep 1
 	/usr/bin/smbcontrol $(cat /var/run/smbd.pid 2>/dev/null) reload-config 2>&1
