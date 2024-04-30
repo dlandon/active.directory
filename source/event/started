@@ -1,2 +1,9 @@
 #!/bin/bash
-/usr/local/emhttp/plugins/active.directory/scripts/rc.active.directory apply
+VARS="/usr/local/emhttp/state/var.ini"
+source $VARS
+
+if [ "$shareSMBEnabled" == "ads" ]; then
+	/usr/local/emhttp/plugins/active.directory/scripts/rc.active.directory apply
+else
+	rm -f /etc/samba/smb-active.directory.conf
+fi

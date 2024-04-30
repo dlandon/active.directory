@@ -5,50 +5,47 @@
 
 apply_settings()
 {
+	# Helper function to append a line to the configuration file
+	append_conf() {
+		echo "$1" >> /etc/samba/smb-active.directory.conf
+	}
+
 	# Clear the active.directory conf file
-	echo "" > /etc/samba/smb-active.directory.conf
+	> /etc/samba/smb-active.directory.conf
 
-	# Set the backend database
-	string="idmap config * : backend = $IDMAP_BACKEND"
-	echo "$string" >> /etc/samba/smb-active.directory.conf
+	# Configuration settings as an array of strings
+	config_entries=(
+		"idmap config * : backend = $IDMAP_BACKEND"
+		"idmap config * : range = $IDMAP_RANGE"
+		"idmap cache time = $IDMAP_CACHE_TIME"
+		"idmap negative cache time = $IDMAP_NEGATIVE_CACHE_TIME"
+		"winbind cache time = $WINBIND_CACHE_TIME"
+		"map acl inherit = yes"
+		"store dos attributes = yes"
+	)
 
-	# Set the backend range
-	string="idmap config * : range = $IDMAP_RANGE"
-	echo "$string" >> /etc/samba/smb-active.directory.conf
-
-	# Set the idmap cache time
-	string="idmap cache time = $IDMAP_CACHE_TIME"
-	echo "$string" >> /etc/samba/smb-active.directory.conf
-
-	# Set the idmap cache time
-	string="idmap negative cache time = $IDMAP_NEGATIVE_CACHE_TIME"
-	echo "$string" >> /etc/samba/smb-active.directory.conf
-
-	# Set the winbind cache time
-	string="winbind cache time = $WINBIND_CACHE_TIME"
-	echo "$string" >> /etc/samba/smb-active.directory.conf
-
-	# Set map acl inherit
-	string="map acl inherit = yes"
-	echo "$string" >> /etc/samba/smb-active.directory.conf
-
-	# Set map acl inherit
-	string="map acl inherit = yes"
-	echo "$string" >> /etc/samba/smb-active.directory.conf
-
-	# Set store dos attributes
-	string="store dos attributes = yes"
-	echo "$string" >> /etc/samba/smb-active.directory.conf
+	# Append all configuration entries
+	for entry in "${config_entries[@]}"; do
+		append_conf "$entry"
+	done
 
 	# Set vfs objects = acl_xattr on all shares
-	/usr/local/emhttp/plugins/active.directory/scripts/config_vfs
+	$DOCROOT/plugins/active.directory/scripts/config_vfs
 
-	# Reload samba parameters
-	sleep 1
-	/usr/bin/smbcontrol $(cat /var/run/smbd.pid 2>/dev/null) reload-config 2>&1
+	# Reload samba parameters, ensuring PID file exists
+	pid_file='/var/run/smbd.pid'
+	if [ -f "$pid_file" ]; then
+		smb_pid=$(cat "$pid_file")
+		/usr/bin/smbcontrol "$smb_pid" reload-config 2>&1
+	else
+		logger "Error: smbd PID file not found." -t$PROG_NAME
+		return 1
+	fi
 
+	# Log application of settings
 	logger "Active Directory Extras Applied" -t$PROG_NAME
 }
+
 
 clear_winbind_cache()
 {
