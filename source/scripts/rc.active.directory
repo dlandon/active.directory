@@ -43,7 +43,7 @@ apply_settings()
 	fi
 
 	# Log application of settings
-	logger "Active Directory Extras Applied" -t$PROG_NAME
+	logger "Active Directory Settings Applied" -t$PROG_NAME
 }
 
 
@@ -96,6 +96,13 @@ get_idmap_neg_cache_time()
 	value=`/usr/bin/testparm -sv 2>/dev/null | /usr/bin/grep 'idmap negative cache time' | /bin/awk '{print $6}'`
 	echo "$value"
 }
+
+VARS="/usr/local/emhttp/state/var.ini"
+source $VARS
+
+if [ "$shareSMBEnabled" != "ads" ];then
+	exit
+fi
 
 # read our configuration.
 plugin="active.directory"
