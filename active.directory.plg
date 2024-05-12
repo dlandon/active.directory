@@ -2,12 +2,12 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name		"active.directory">
 <!ENTITY author		"dlandon">
-<!ENTITY version	"2024.04.30">
+<!ENTITY version	"2024.05.12">
 <!ENTITY launch		"Settings/SMB">
 <!ENTITY gitURL		"https://raw.githubusercontent.com/&author;/&name;/master">
 <!ENTITY pluginURL	"&gitURL;/&name;.plg">
 <!ENTITY supportURL	"https://forums.unraid.net/topic/137467-active-directory-extras-plugin-allows-tweaking-some-ad-settings-in-samba/#comment-1248698">
-<!ENTITY MD5		"2320f17aaa70746a04eeb844bfe88574">
+<!ENTITY MD5		"12d6bc5743f7782520c87f9b26749fa4">
 ]>
 
 <PLUGIN	name="&name;"
@@ -22,6 +22,9 @@
 <CHANGES>
 ##&name;
 ###&version;
+- Add: Don't apply AD settings if AD is not selected in SMB.
+
+###2024.04.30
 - Fix: Some code cleanup.
 - Add: Disable 'Active Directory Extras' page when AD not selected in SMB.
 
