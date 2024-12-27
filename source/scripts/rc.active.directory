@@ -15,6 +15,8 @@ apply_settings()
 
 	# Configuration settings as an array of strings
 	config_entries=(
+		"idmap config DOMAIN : backend = $IDMAP_DOMAIN_BACKEND"
+		"idmap config DOMAIN : range = $IDMAP_DOMAIN_RANGE"
 		"idmap config * : backend = $IDMAP_BACKEND"
 		"idmap config * : range = $IDMAP_RANGE"
 		"idmap cache time = $IDMAP_CACHE_TIME"
@@ -52,6 +54,9 @@ clear_winbind_cache()
 	# Clear net cache
 	/usr/bin/net cache flush
 
+	# Configure shares for vfs act_xattr
+	$DOCROOT/plugins/active.directory/scripts/config_vfs
+
 	# Restart samba
 	sleep 1
 	/etc/rc.d/rc.samba restart &>/dev/null
@@ -59,74 +64,139 @@ clear_winbind_cache()
 	logger "Winbind cache cleared" -t$PROG_NAME
 }
 
+get_domain_backend()
+{
+	value=`/usr/bin/testparm -vs 2>/dev/null | tr '*' ' ' | /usr/bin/grep 'idmap config domain' | /usr/bin/grep 'backend' | /bin/awk '{print $7}'`
+	echo "$value"
+}
+
+get_domain_range()
+{
+	value=`/usr/bin/testparm -vs 2>/dev/null | tr '*' ' ' | /usr/bin/grep 'idmap config domain' | /usr/bin/grep 'range' | /bin/awk '{print $7}'`
+	echo "$value"
+}
+
 get_backend()
 {
-	value=`/usr/bin/testparm -s 2>/dev/null | tr '*' ' ' | /usr/bin/grep 'idmap config' | /usr/bin/grep 'backend' | /bin/awk '{print $6}'`
+	value=`/usr/bin/testparm -vs 2>/dev/null | tr '*' ' ' | /usr/bin/grep 'idmap config *' | /usr/bin/grep 'backend' | /bin/awk '{print $6}'`
 	echo "$value"
 }
 
 get_range()
 {
-	value=`/usr/bin/testparm -s 2>/dev/null | tr '*' ' ' | /usr/bin/grep 'idmap config' | /usr/bin/grep 'range' | /bin/awk '{print $6}'`
+	value=`/usr/bin/testparm -vs 2>/dev/null | tr '*' ' ' | /usr/bin/grep 'idmap config *' | /usr/bin/grep 'range' | /bin/awk '{print $6}'`
 	echo "$value"
 }
 
 get_winbind_cache_time()
 {
-	value=`/usr/bin/testparm -s 2>/dev/null | /usr/bin/grep 'winbind cache time' | /bin/awk '{print $5}'`
+	value=`/usr/bin/testparm -vs 2>/dev/null | /usr/bin/grep 'winbind cache time' | /bin/awk '{print $5}'`
 	if [ "$value" = "" ]; then
-		echo "432000"
+		echo "default"
 	else
-		echo "$value"
+		case "$value" in
+			15)
+				echo "15 seconds"
+				;;
+			60)
+				echo "1 minute"
+				;;
+			300)
+				echo "5 minutes"
+				;;
+			3600)
+				echo "1 hour"
+				;;
+			*)
+				echo "$value seconds"
+				;;
+		esac
 	fi
 }
 
 get_idmap_cache_time()
 {
-	value=`/usr/bin/testparm -s 2>/dev/null | /usr/bin/grep 'idmap cache time' | /bin/awk '{print $5}'`
+	value=$(/usr/bin/testparm -s 2>/dev/null | /usr/bin/grep 'idmap cache time' | /bin/awk '{print $5}')
+
 	if [ "$value" = "" ]; then
-		echo "604800"
+		echo "default"
 	else
-		echo "$value"
+		case "$value" in
+			3600)
+				echo "1 hour"
+				;;
+			43200)
+				echo "12 hours"
+				;;
+			86400)
+				echo "24 hours"
+				;;
+			*)
+				echo "$value seconds"
+				;;
+		esac
 	fi
 }
 
 get_idmap_neg_cache_time()
 {
 	value=`/usr/bin/testparm -sv 2>/dev/null | /usr/bin/grep 'idmap negative cache time' | /bin/awk '{print $6}'`
-	echo "$value"
+	if [ "$value" = "" ]; then
+		echo "default"
+	else
+		case "$value" in
+			60)
+				echo "1 minute"
+				;;
+			300)
+				echo "5 minutes"
+				;;
+			900)
+				echo "15 minutes"
+				;;
+			*)
+				echo "$value seconds"
+				;;
+		esac
+	fi
 }
 
-VARS="/usr/local/emhttp/state/var.ini"
+VARS="$DOCROOT/state/var.ini"
 source $VARS
 
-if [ "$shareSMBEnabled" != "ads" ];then
-	exit
-fi
+#if [ "$shareSMBEnabled" != "ads" ];then
+#	echo "AD not enabled!"
+#	exit
+#fi
 
 # read our configuration.
 plugin="active.directory"
 CONFIG="/boot/config/plugins/${plugin}/${plugin}.cfg"
 source $CONFIG
 
+# Set default IDMAP_DOMAIN_RANGE if blank in settings
+if [ "$IDMAP_DOMAIN_RANGE" = "" ]; then
+	IDMAP_DOMAIN_RANGE="100000-199999"
+fi
+
 # Set default IDMAP_RANGE if blank in settings
 if [ "$IDMAP_RANGE" = "" ]; then
-	IDMAP_RANGE="3000-7999"
+	IDMAP_RANGE="10000-99999"
 fi
 
 # Set default IDMAP_CACHE_TIME if blank in settings
 if [ "$IDMAP_CACHE_TIME" = "" ]; then
-	IDMAP_CACHE_TIME="302400"
+	IDMAP_CACHE_TIME="43200"
 fi
 
 # Set default IDMAP_NEGATIVE_CACHE_TIME if blank in settings
 if [ "$IDMAP_NEGATIVE_CACHE_TIME" = "" ]; then
-	IDMAP_NEGATIVE_CACHE_TIME="120"
+	IDMAP_NEGATIVE_CACHE_TIME="300"
 fi
 
 # Set default WINBIND_CACHE_TIME if blank in settings
 if [ "$WINBIND_CACHE_TIME" = "" ]; then
-	WINBIND_CACHE_TIME="15"
+	WINBIND_CACHE_TIME="300"
 fi
 
 PROG_NAME=${plugin}
@@ -141,6 +211,12 @@ case "$1" in
 	;;
 	'clear_cache')
 		clear_winbind_cache 
+	;;
+	'domain_backend')
+		get_domain_backend
+	;;
+	'domain_range')
+		get_domain_range
 	;;
 	'backend')
 		get_backend
@@ -158,5 +234,5 @@ case "$1" in
 		get_idmap_neg_cache_time
 	;;
 	*)
-		echo "usage $0 apply|clear_cache|backend|range|winbind_cache|idmap_cache|idmap_neg_cache"
+		echo "usage $0 apply|clear_cache|domain_backend|domain_range|backend|range|winbind_cache|idmap_cache|idmap_neg_cache"
 esac

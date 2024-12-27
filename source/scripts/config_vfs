@@ -14,7 +14,7 @@
 
 	/* Go through each share and add the acl_xattr. */
 	foreach ($smb_shares as $s) {
-		if ($s != "global") {
+		if (($s != "global") && ($s != "flash")) {
 			if (isset($smb_config[$s]['vfs objects'])) {
 				/* Remove all occurrences of $acl_xattr from the vfs objects string */
 				$smb_config[$s]['vfs objects'] = str_replace($acl_xattr, '', $smb_config[$s]['vfs objects']);

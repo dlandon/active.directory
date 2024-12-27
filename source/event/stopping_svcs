@@ -9,8 +9,6 @@ VARS="${DOCROOT}/state/var.ini"
 source $VARS
 
 if [ "$shareSMBEnabled" == "ads" ]; then
-	${DOCROOT}/plugins/active.directory/scripts/rc.startup > /dev/null 2>&1
-	${DOCROOT}/plugins/active.directory/scripts/rc.active.directory apply > /dev/null 2>&1
-else
-	rm -f /etc/samba/smb-active.directory.conf
+	${DOCROOT}/plugins/active.directory/scripts/rc.shutdown  > /dev/null 2>&1
+	${DOCROOT}/plugins/active.directory/scripts/rc.cleanup > /dev/null 2>&1
 fi

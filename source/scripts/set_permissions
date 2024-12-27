@@ -1,0 +1,119 @@
+#!/usr/bin/env php
+<?php
+
+/* File paths */
+$sharesIni = "/usr/local/emhttp/state/shares.ini";
+$disksIni = "/usr/local/emhttp/state/disks.ini";
+
+/* Define attribute and value for extended attributes */
+$attrName = "user.attr_name";
+$attrValue = "value";
+
+/* Define default Unraid ownership */
+$defaultUser = "nobody";
+$defaultGroup = "users";
+
+/**
+ * Parse an INI file with section headers and return an array of sections.
+ *
+ * @param string $filePath
+ * @return array
+ */
+function parseIniFileWithSections($filePath)
+{
+	if (!file_exists($filePath)) {
+		throw new Exception("File not found: $filePath");
+	}
+
+	$content = file_get_contents($filePath);
+	$sections = [];
+	preg_match_all('/\["([^\]]+)"\]/', $content, $matches, PREG_OFFSET_CAPTURE);
+
+	for ($i = 0; $i < count($matches[1]); $i++) {
+		$sectionName = $matches[1][$i][0];
+		$startPos = $matches[0][$i][1] + strlen($matches[0][$i][0]);
+		$endPos = isset($matches[0][$i + 1]) ? $matches[0][$i + 1][1] : strlen($content);
+
+		$sectionContent = substr($content, $startPos, $endPos - $startPos);
+		$sectionLines = explode("\n", $sectionContent);
+		$sections[$sectionName] = [];
+
+		foreach ($sectionLines as $line) {
+			if (strpos($line, '=') !== false) {
+				list($key, $value) = explode('=', $line, 2);
+				$key = trim($key);
+				$value = trim($value, " \t\n\r\0\x0B\""); // Remove quotes and whitespace
+				$sections[$sectionName][$key] = $value;
+			}
+		}
+	}
+
+	return $sections;
+}
+
+/**
+ * Process shares: set extended attributes.
+ *
+ * @param array $shares
+ * @param string $attrName
+ * @param string $attrValue
+ */
+function processShares($shares, $attrName, $attrValue)
+{
+	foreach ($shares as $shareName => $shareData) {
+		$sharePath = "/mnt/user/$shareName";
+
+		if (is_dir($sharePath)) {
+			echo "Setting extended attributes for $sharePath...\n";
+			exec("getfattr -d " . escapeshellarg($sharePath) . " 2>/dev/null");
+			exec("setfattr -n " . escapeshellarg($attrName) . " -v " . escapeshellarg($attrValue) . " " . escapeshellarg($sharePath));
+		} else {
+			echo "Warning: Share path $sharePath does not exist, skipping.\n";
+		}
+	}
+}
+
+/**
+ * Process disks: set permissions and ownership.
+ *
+ * @param array $disks
+ * @param string $defaultUser
+ * @param string $defaultGroup
+ */
+function processDisks($disks, $defaultUser, $defaultGroup)
+{
+	foreach ($disks as $diskName => $diskData) {
+		$diskPath = "/mnt/$diskName";
+
+		// Skip non-disk paths
+		if (in_array($diskName, ['parity', 'parity2', 'flash'])) {
+			echo "Skipping non-disk path: $diskPath...\n";
+			continue;
+		}
+
+		if (is_dir($diskPath)) {
+			echo "Setting permissions and ownership for $diskPath...\n";
+			exec("chmod -R 770 " . escapeshellarg($diskPath));
+			exec("chown -R " . escapeshellarg("$defaultUser:$defaultGroup") . " " . escapeshellarg($diskPath));
+		} else {
+			echo "Warning: Disk path $diskPath does not exist, skipping.\n";
+		}
+	}
+}
+
+/* Main Execution */
+try {
+	$shares = parseIniFileWithSections($sharesIni);
+	$disks = parseIniFileWithSections($disksIni);
+
+	echo "Processing shares...\n";
+	processShares($shares, $attrName, $attrValue);
+
+	echo "Processing disks...\n";
+	processDisks($disks, $defaultUser, $defaultGroup);
+
+	echo "Operation completed.\n";
+} catch (Exception $e) {
+	echo "Error: " . $e->getMessage() . "\n";
+}
+?>
