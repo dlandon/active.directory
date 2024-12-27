@@ -107,8 +107,8 @@ tar -xf /boot/config/plugins/&name;/&name;-&version;.tgz -C /usr/local/emhttp/pl
 chmod +x /usr/local/emhttp/plugins/&name;/scripts/* /usr/local/emhttp/plugins/&name;/event/*
 
 # Fix permissions of shares and disks
-/usr/local/emhttp/plugins/&name;/scripts/set_permissions 1>/dev/null
-
+echo "Setting permissions"
+/usr/local/emhttp/plugins/&name;/scripts/set_permissions
 </INLINE>
 </FILE>
 
@@ -154,7 +154,7 @@ at -M -f /tmp/&name;/add-smb now 2>/dev/null
 echo ""
 echo "-----------------------------------------------------------"
 echo " &name; is installed."
-echo " Copyright 2023 &author;"
+echo " Copyright 2024 &author;"
 echo " Version: &version;"
 echo "-----------------------------------------------------------"
 echo ""
