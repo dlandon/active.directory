@@ -106,7 +106,7 @@ tar -xf /boot/config/plugins/&name;/&name;-&version;.tgz -C /usr/local/emhttp/pl
 # Fix permissions of executable files
 chmod +x /usr/local/emhttp/plugins/&name;/scripts/* /usr/local/emhttp/plugins/&name;/event/*
 
-* Fix permissions of shares and disks
+# Fix permissions of shares and disks
 /usr/local/plugins/&name;/scripts/set_permissions > /dev/null 2>&1
 
 </INLINE>
