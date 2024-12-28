@@ -24,7 +24,7 @@
 ###&version;
 - Fix: AD Extras page not showing when AD enabled.
 
-###2024/12/27a
+###2024.12.27a
 - Fix: Change some php variables to constants that don't need to be variables.
 - Add: Database files are stored on the flash drive, so they will be persistent.
 - Add: Database files are backuped up to the /flash when Unraid is shut down.
@@ -107,6 +107,9 @@ tar -xf /boot/config/plugins/&name;/&name;-&version;.tgz -C /usr/local/emhttp/pl
 
 # Fix permissions of executable files
 chmod +x /usr/local/emhttp/plugins/&name;/scripts/* /usr/local/emhttp/plugins/&name;/event/*
+
+# Apply the settings
+/usr/local/emhttp/plugins/&name;/scripts/rc.active.directory apply
 </INLINE>
 </FILE>
 
