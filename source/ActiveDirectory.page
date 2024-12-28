@@ -1,7 +1,7 @@
 Menu="SMB:4"
 Title="Active Directory Extras"
 Tag="fa-share-alt-square"
-Cond="($var['shareSMBEnabled'] != 'ads')"
+Cond="($var['shareSMBEnabled'] == 'ads')"
 ---
 <?PHP
 /* Copyright 2023, Dan Landon.
