@@ -4,7 +4,7 @@ Tag="fa-share-alt-square"
 Cond="($var['shareSMBEnabled'] == 'ads')"
 ---
 <?PHP
-/* Copyright 2023, Dan Landon.
+/* Copyright 2023-2024, Dan Landon.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2,
@@ -79,7 +79,7 @@ _(Domain Backend Database)_
 :end
 
 _(Domain Backend Range)_:
-: <input type="text" name="IDMAP_DOMAIN_RANGE" class="narrow" maxlength="20" value="<?=$active_directory_cfg['IDMAP_DOMAIN_RANGE'];?>" placeholder="100000-999999" disabled>
+: <input type="text" name="IDMAP_DOMAIN_RANGE" class="narrow" maxlength="20" value="<?=htmlspecialchars($active_directory_cfg['IDMAP_DOMAIN_RANGE']);?>" placeholder="100000-999999" disabled>
 
 :active_directory_domain_backend_range_plug:
 > The Domain Backend Range defines the range of Liinux User IDs (UIDs) and Group IDs (GIDs) used by Samba to map Active Directory (AD) Security Identifiers (SIDs). This range ensures that the IDs assigned to AD users and groups do not conflict with other system accounts.
@@ -96,7 +96,7 @@ _(Backend Database)_
 :end
 
 _(Backend Range)_:
-: <input type="text" name="IDMAP_RANGE" class="narrow" maxlength="20" value="<?=$active_directory_cfg['IDMAP_RANGE'];?>" placeholder="10000-99999" disabled>
+: <input type="text" name="IDMAP_RANGE" class="narrow" maxlength="20" value="<?=htmlspecialchars($active_directory_cfg['IDMAP_RANGE'](;?>" placeholder="10000-99999" disabled>
 
 :active_directory_backend_database_range_plug:
 > The Backend Range defines the range of Linux User IDs (UIDs) and Group IDs (GIDs) allocated for a specific backend. This ensures that each mapping backend (e.g., rid, tdb, ad) operates within a defined range, preventing conflicts with other mappings or local system accounts.
