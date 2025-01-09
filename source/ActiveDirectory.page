@@ -96,7 +96,7 @@ _(Backend Database)_
 :end
 
 _(Backend Range)_:
-: <input type="text" name="IDMAP_RANGE" class="narrow" maxlength="20" value="<?=htmlspecialchars($active_directory_cfg['IDMAP_RANGE'](;?>" placeholder="10000-99999" disabled>
+: <input type="text" name="IDMAP_RANGE" class="narrow" maxlength="20" value="<?=htmlspecialchars($active_directory_cfg['IDMAP_RANGE']);?>" placeholder="10000-99999" disabled>
 
 :active_directory_backend_database_range_plug:
 > The Backend Range defines the range of Linux User IDs (UIDs) and Group IDs (GIDs) allocated for a specific backend. This ensures that each mapping backend (e.g., rid, tdb, ad) operates within a defined range, preventing conflicts with other mappings or local system accounts.
