@@ -2,12 +2,12 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name		"active.directory">
 <!ENTITY author		"dlandon">
-<!ENTITY version	"2024.12.28">
+<!ENTITY version	"2025.01.09">
 <!ENTITY launch		"Settings/SMB">
 <!ENTITY gitURL		"https://raw.githubusercontent.com/&author;/&name;/master">
 <!ENTITY pluginURL	"&gitURL;/&name;.plg">
 <!ENTITY supportURL	"https://forums.unraid.net/topic/137467-active-directory-extras-plugin-allows-tweaking-some-ad-settings-in-samba/#comment-1248698">
-<!ENTITY MD5		"f2b6e92fc87bba1a5109a23f34cf4980">
+<!ENTITY MD5		"7b89e1486c5742e0d18771ecb1f006f4">
 ]>
 
 <PLUGIN	name="&name;"
@@ -22,6 +22,10 @@
 <CHANGES>
 ##&name;
 ###&version;
+- Fix: Some code changes for reliability and robustness.
+- Add: Set permissions when restoring the databases.
+
+###2024.12.28
 - Fix: AD Extras page not showing when AD enabled.
 
 ###2024.12.27a
@@ -66,7 +70,7 @@
 </CHANGES>
 
 <!--
-Copyright 2023, Dan Landon
+Copyright 2023-2024, Dan Landon
 This plugin lets you set some Active Directory settings.
 -->
 
@@ -155,7 +159,7 @@ at -M -f /tmp/&name;/add-smb now 2>/dev/null
 echo ""
 echo "-----------------------------------------------------------"
 echo " &name; is installed."
-echo " Copyright 2024 &author;"
+echo " Copyright 2025 &author;"
 echo " Version: &version;"
 echo "-----------------------------------------------------------"
 echo ""
