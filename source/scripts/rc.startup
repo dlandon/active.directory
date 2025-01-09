@@ -12,6 +12,11 @@ if [ -d "$TDB_SOURCE" ]; then
     if [ -e "${tdb_files[0]}" ]; then
         echo "Restoring TDB files from persistent storage..."
         cp -u "$TDB_SOURCE"/*.tdb "$TDB_DEST"
+
+        # Restore ownership and permissions
+        echo "Restoring permissions..."
+        chown -R root:root "$TDB_DEST"
+        chmod -R 600 "$TDB_DEST"/*.tdb
         echo "TDB files restored to $TDB_DEST."
     else
         echo "No TDB files found in $TDB_SOURCE. Skipping restoration."
