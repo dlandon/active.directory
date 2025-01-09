@@ -2,12 +2,12 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name		"active.directory">
 <!ENTITY author		"dlandon">
-<!ENTITY version	"2025.01.09">
+<!ENTITY version	"2025.01.09a">
 <!ENTITY launch		"Settings/SMB">
 <!ENTITY gitURL		"https://raw.githubusercontent.com/&author;/&name;/master">
 <!ENTITY pluginURL	"&gitURL;/&name;.plg">
 <!ENTITY supportURL	"https://forums.unraid.net/topic/137467-active-directory-extras-plugin-allows-tweaking-some-ad-settings-in-samba/#comment-1248698">
-<!ENTITY MD5		"7b89e1486c5742e0d18771ecb1f006f4">
+<!ENTITY MD5		"9df87145e2a26753a918f4f5e8d94d07">
 ]>
 
 <PLUGIN	name="&name;"
