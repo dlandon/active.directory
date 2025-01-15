@@ -10,6 +10,9 @@ if [ -d "$TDB_SOURCE" ]; then
     # Check if there are TDB files to restore
     tdb_files=("$TDB_SOURCE"/*.tdb)
     if [ -e "${tdb_files[0]}" ]; then
+		# Stop samba
+		/etc/rc.d/rc.samba stop &>/dev/null
+
         echo "Restoring TDB files from persistent storage..."
         cp -u "$TDB_SOURCE"/*.tdb "$TDB_DEST"
 
@@ -17,6 +20,10 @@ if [ -d "$TDB_SOURCE" ]; then
         echo "Restoring permissions..."
         chown -R root:root "$TDB_DEST"
         chmod -R 600 "$TDB_DEST"/*.tdb
+
+		# Start samba
+		/etc/rc.d/rc.samba start &>/dev/null
+
         echo "TDB files restored to $TDB_DEST."
     else
         echo "No TDB files found in $TDB_SOURCE. Skipping restoration."
