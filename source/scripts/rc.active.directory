@@ -161,10 +161,15 @@ get_idmap_neg_cache_time()
 	fi
 }
 
+DOCROOT=`/usr/bin/grep -Po '^chdir = \K.*' /etc/php-fpm.d/www.conf`
+if [ -z ${DOCROOT} ];then
+	DOCROOT="/usr/local/emhttp"
+fi
+
 VARS="$DOCROOT/state/var.ini"
 source $VARS
 
-if [ "$shareSMBEnabled" == "ads" ];then
+if [ "$shareSMBEnabled" != "ads" ];then
 	echo "AD not enabled!"
 	exit
 fi
@@ -200,10 +205,6 @@ if [ "$WINBIND_CACHE_TIME" = "" ]; then
 fi
 
 PROG_NAME=${plugin}
-DOCROOT=`/usr/bin/grep -Po '^chdir = \K.*' /etc/php-fpm.d/www.conf`
-if [ -z ${DOCROOT} ];then
-	DOCROOT="/usr/local/emhttp"
-fi
 
 case "$1" in
 	'apply')
