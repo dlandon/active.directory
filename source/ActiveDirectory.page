@@ -15,7 +15,7 @@ Cond="($var['shareSMBEnabled'] == 'ads')"
  */
 ?>
 
-<?PHP
+<?
 /* Define our plugin name. */
 define('ACTIVE_DIRECTORY_PLUGIN', 'active.directory');
 
